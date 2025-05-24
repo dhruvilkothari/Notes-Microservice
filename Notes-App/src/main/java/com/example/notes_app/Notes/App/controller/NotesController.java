@@ -27,4 +27,9 @@ public class NotesController {
         return notesService.getAllNotes();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<NotesResponseDto> getNoteById(@PathVariable Long id){
+        return notesService.getNoteById(id);
+    }
+
 }

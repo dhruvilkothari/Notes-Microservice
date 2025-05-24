@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,4 +40,13 @@ public class NotesService {
         return ResponseEntity.ok(notesResponseDtos);
     }
 
+    public ResponseEntity<NotesResponseDto> getNoteById(Long id) {
+        Optional<NotesEntity> notesEntity = notesRepository.findById(id);
+        if (notesEntity.isEmpty()==true){
+            return ResponseEntity.notFound().build();
+        }
+        NotesEntity notesEntity1 = notesEntity.get();
+        NotesResponseDto notesResponseDto = modelMapper.map(notesEntity1,NotesResponseDto.class);
+        return ResponseEntity.ok(notesResponseDto);
+    }
 }
