@@ -2,7 +2,7 @@ package com.example.auth_service.Auth_Service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
+
 
 @Entity
 @Getter
@@ -19,4 +19,5 @@ public class UserEntity {
     private String email;
     private String password;
     private String name;
+
 }

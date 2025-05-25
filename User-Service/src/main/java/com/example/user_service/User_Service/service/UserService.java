@@ -6,8 +6,11 @@ import com.example.user_service.User_Service.entity.UserEntity;
 import com.example.user_service.User_Service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +54,24 @@ public class UserService {
 
         log.info("User deleted: {}", userEntity.getId());
         return ResponseEntity.ok("User account deleted successfully");
+    }
+
+
+    public ResponseEntity<?> findUser(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return ResponseEntity.ok(userEntity);
+    }
+
+    public ResponseEntity<?> findUserById(Long id) {
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User not found with id: " + id);
+        }
+
+        return ResponseEntity.ok(optionalUser.get());
     }
 }

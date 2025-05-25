@@ -1,10 +1,7 @@
-package com.example.user_service.User_Service.entity;
+package com.example.connection_service.Connection_Service.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 
 @Table(name = "user_entity")
+@Builder
 public class UserEntity {
 
     @Id

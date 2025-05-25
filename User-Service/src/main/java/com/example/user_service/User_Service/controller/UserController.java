@@ -28,4 +28,14 @@ public class UserController {
     public ResponseEntity<?> deleteUser(){
         return userService.deleteUser();
     }
+
+    @GetMapping("/findUser")
+    public ResponseEntity<?> findUser(@RequestParam("email") String email){
+        return userService.findUser(email);
+    }
+    @GetMapping("/findById")
+    public ResponseEntity<?> findUserById(@RequestParam("id") Long id){
+        return userService.findUserById(id);
+    }
+
 }

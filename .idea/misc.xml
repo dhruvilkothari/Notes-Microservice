@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/Discovery-Service/pom.xml" />
         <option value="$PROJECT_DIR$/Apigateway/pom.xml" />
         <option value="$PROJECT_DIR$/Notes-App/pom.xml" />
+        <option value="$PROJECT_DIR$/Connection-Service/pom.xml" />
       </list>
     </option>
   </component>

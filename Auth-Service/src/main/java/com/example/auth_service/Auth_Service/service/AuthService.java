@@ -44,7 +44,7 @@ public class AuthService {
             }
 
         }
-        return ResponseEntity.badRequest().body("User not found");
+        return ResponseEntity.badRequest().body("User not found with Given Email and password");
     }
 
 }
