@@ -3,6 +3,7 @@ package com.example.notes_app.Notes.App.service;
 import com.example.notes_app.Notes.App.context.UserContext;
 import com.example.notes_app.Notes.App.dto.NotesDto;
 import com.example.notes_app.Notes.App.dto.NotesResponseDto;
+import com.example.notes_app.Notes.App.dto.NotesUpdateDto;
 import com.example.notes_app.Notes.App.entity.NotesEntity;
 import com.example.notes_app.Notes.App.repository.NotesRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,4 +50,23 @@ public class NotesService {
         NotesResponseDto notesResponseDto = modelMapper.map(notesEntity1,NotesResponseDto.class);
         return ResponseEntity.ok(notesResponseDto);
     }
+
+    public ResponseEntity<NotesResponseDto> updateNoteById(Long id, NotesUpdateDto notesUpdateDto){
+        Optional<NotesEntity> notesEntity = notesRepository.findById(id);
+        if (notesEntity.isEmpty()==true){
+            return ResponseEntity.notFound().build();
+        }
+        NotesEntity notesEntity1 = notesEntity.get();
+        if(notesUpdateDto.getTitle()!=null){
+            notesEntity1.setTitle(notesUpdateDto.getTitle());
+        }
+        if(notesUpdateDto.getDescription()!=null){
+            notesEntity1.setDescription(notesUpdateDto.getDescription());
+        }
+        NotesEntity savedNotes = notesRepository.save(notesEntity1);
+        NotesResponseDto notesResponseDto = modelMapper.map(savedNotes, NotesResponseDto.class);
+        return ResponseEntity.ok(notesResponseDto);
+    }
+
+
 }

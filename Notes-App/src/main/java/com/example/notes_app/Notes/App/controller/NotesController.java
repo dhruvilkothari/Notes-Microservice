@@ -2,6 +2,7 @@ package com.example.notes_app.Notes.App.controller;
 
 import com.example.notes_app.Notes.App.dto.NotesDto;
 import com.example.notes_app.Notes.App.dto.NotesResponseDto;
+import com.example.notes_app.Notes.App.dto.NotesUpdateDto;
 import com.example.notes_app.Notes.App.service.NotesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,5 +34,9 @@ public class NotesController {
         return notesService.getNoteById(id);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<NotesResponseDto> updateNoteById(@PathVariable Long id, @RequestBody NotesUpdateDto notesDto){
+        return notesService.updateNoteById(id, notesDto);
+    }
 
 }
