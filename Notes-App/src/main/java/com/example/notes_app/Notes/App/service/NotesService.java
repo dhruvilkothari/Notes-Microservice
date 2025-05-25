@@ -9,6 +9,7 @@ import com.example.notes_app.Notes.App.repository.NotesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -69,4 +70,13 @@ public class NotesService {
     }
 
 
+    public ResponseEntity<String> deleteNoteById(Long id) {
+        Optional<NotesEntity> notesEntity = notesRepository.findById(id);
+        if (notesEntity.isEmpty()==true){
+            return ResponseEntity.notFound().build();
+        }
+        notesRepository.deleteById(id);
+        NotesResponseDto notesResponseDto = modelMapper.map(notesEntity.get(), NotesResponseDto.class);
+        return ResponseEntity.ok("DELETE the Note");
+    }
 }
