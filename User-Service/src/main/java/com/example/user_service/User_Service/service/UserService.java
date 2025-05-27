@@ -4,12 +4,14 @@ import com.example.user_service.User_Service.context.UserContext;
 import com.example.user_service.User_Service.dto.UpdateUserRequest;
 import com.example.user_service.User_Service.entity.UserEntity;
 import com.example.user_service.User_Service.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -58,9 +60,14 @@ public class UserService {
 
 
     public ResponseEntity<?> findUser(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
-        return ResponseEntity.ok(userEntity);
+        log.info("User Entity in "+ email);
+        Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+        if (userEntity.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User not found with email: " + email);
+        }
+        return ResponseEntity.ok(userEntity.get());
     }
 
     public ResponseEntity<?> findUserById(Long id) {
@@ -73,5 +80,32 @@ public class UserService {
         }
 
         return ResponseEntity.ok(optionalUser.get());
+    }
+    @Transactional
+    public ResponseEntity<?> followUser(Long userId, Long followingId) {
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> followingOptional = userRepository.findById(followingId);
+
+        if (userOptional.isEmpty() || followingOptional.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("User or following user not found");
+        }
+
+        UserEntity user = userOptional.get();
+        UserEntity following = followingOptional.get();
+
+            if (user.getFollowing().contains(following)) {
+            return ResponseEntity.ok(Collections.singletonMap("message", "User is already following the specified user"));
+
+        }
+
+        following.getFollowers().add(user);
+        userRepository.save(following);
+        user.getFollowing().add(following);
+        userRepository.save(user);
+
+
+        return ResponseEntity.ok().build();
     }
 }

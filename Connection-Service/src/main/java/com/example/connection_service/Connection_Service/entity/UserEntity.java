@@ -2,6 +2,7 @@ package com.example.connection_service.Connection_Service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Table(name = "user_entity")
 @Builder
+
 public class UserEntity {
 
     @Id

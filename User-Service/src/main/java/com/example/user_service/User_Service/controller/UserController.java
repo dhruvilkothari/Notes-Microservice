@@ -38,4 +38,10 @@ public class UserController {
         return userService.findUserById(id);
     }
 
+    @PutMapping("/{userId}/following/{followingId}")
+    public ResponseEntity<?> followUser(@PathVariable Long userId, @PathVariable Long followingId) {
+        return userService.followUser(userId, followingId);
+    }
+
+
 }

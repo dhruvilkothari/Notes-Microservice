@@ -6,6 +6,7 @@ import com.example.connection_service.Connection_Service.entity.ConnectionEntity
 import com.example.connection_service.Connection_Service.entity.UserEntity;
 import com.example.connection_service.Connection_Service.entity.enums.Status;
 import com.example.connection_service.Connection_Service.repository.ConnectionsRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class ConnectionService {
     private final ConnectionsRepository connectionRepository;
     private final ConnectionUser connectionUser;
 
+
     public ResponseEntity<?> sendConnectionRequest(Long id) {
 
 
@@ -25,6 +27,7 @@ public class ConnectionService {
         try {
             UserEntity userEntity = connectionUser.findUser(email);
             UserEntity  userEntity2 = connectionUser.findById(id);
+
             log.info("User found: {}", userEntity.getId());
             if(userEntity2 == null){
                 return ResponseEntity.badRequest().body("User not found whom You want to follow");
@@ -45,8 +48,32 @@ public class ConnectionService {
         }
         return ResponseEntity.ok("Connection request sent successfully");
     }
-
+    @Transactional
     public ResponseEntity<?> acceptConnectionRequest(Long id) {
+        String email = UserContext.getEmail();
+        try {
+            UserEntity userEntity = connectionUser.findUser(email);
+            log.info("User found following: {}", userEntity.getId());  // person who want to accept connections
+            log.info("follower: {}", id); // person who send you the connection
+            ConnectionEntity connectionEntity = connectionRepository.findByFollowerIdAndFollowingId(id, userEntity.getId());
+
+            if (connectionEntity == null) {
+                return ResponseEntity.badRequest().body("Connection request not found");
+            }
+
+
+            connectionUser.followUser(userEntity.getId(), id);
+            connectionEntity.setStatus(Status.ACCEPTED);
+            connectionRepository.save(connectionEntity);
+            return ResponseEntity.ok("Connection request accepted successfully");
+        }catch (Exception e){
+            log.error("User not found: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("User not found "+e.getMessage());
+        }
+    }
+
+
+    public ResponseEntity<?> rejectConnectionRequest(Long id) {
         String email = UserContext.getEmail();
         try {
             UserEntity userEntity = connectionUser.findUser(email);
@@ -55,13 +82,12 @@ public class ConnectionService {
             if (connectionEntity == null) {
                 return ResponseEntity.badRequest().body("Connection request not found");
             }
-            connectionEntity.setStatus(Status.ACCEPTED);
+            connectionEntity.setStatus(Status.REJECTED);
             connectionRepository.save(connectionEntity);
         }catch (Exception e){
             log.error("User not found: {}", e.getMessage());
             return ResponseEntity.badRequest().body("User not found "+e.getMessage());
         }
-        return ResponseEntity.ok("Connection request accepted successfully");
+        return ResponseEntity.ok("Connection request rejected successfully");
     }
-
 }

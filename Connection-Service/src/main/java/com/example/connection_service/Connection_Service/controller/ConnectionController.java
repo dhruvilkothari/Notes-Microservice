@@ -25,5 +25,10 @@ public class ConnectionController {
     public ResponseEntity<?> acceptConnectionRequest(@PathVariable Long id) {
         return connectionService.acceptConnectionRequest(id);
     }
+    @PostMapping("/rejectConnectionRequest/{id}")
+    public ResponseEntity<?> rejectConnectionRequest(@PathVariable Long id) {
+        return connectionService.rejectConnectionRequest(id);
+    }
+
 
 }
