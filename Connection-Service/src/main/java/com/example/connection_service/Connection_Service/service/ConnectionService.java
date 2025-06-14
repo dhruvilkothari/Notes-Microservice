@@ -2,6 +2,7 @@ package com.example.connection_service.Connection_Service.service;
 
 import com.example.connection_service.Connection_Service.client.ConnectionUser;
 import com.example.connection_service.Connection_Service.context.UserContext;
+import com.example.connection_service.Connection_Service.dto.FollowDto;
 import com.example.connection_service.Connection_Service.entity.ConnectionEntity;
 import com.example.connection_service.Connection_Service.entity.UserEntity;
 import com.example.connection_service.Connection_Service.entity.enums.Status;
@@ -9,7 +10,9 @@ import com.example.connection_service.Connection_Service.repository.ConnectionsR
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +21,10 @@ import org.springframework.stereotype.Service;
 public class ConnectionService {
     private final ConnectionsRepository connectionRepository;
     private final ConnectionUser connectionUser;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+    private final String topicName = "follow-request";
 
 
     public ResponseEntity<?> sendConnectionRequest(Long id) {
@@ -40,6 +47,15 @@ public class ConnectionService {
             }
 
             ConnectionEntity connectionEntity = ConnectionEntity.builder().status(Status.PENDING).followerId(userEntity.getId()).followingId(id).build();
+            FollowDto followDto = new FollowDto(userEntity.getId(), "You have a new connection request from "+userEntity.getEmail());
+            try{
+                kafkaTemplate.send(topicName, followDto);
+
+            }catch (Exception exp){
+                System.out.println(exp.getMessage());
+                log.error("Error sending message to Kafka: {}", exp.getMessage());
+            }
+
             connectionRepository.save(connectionEntity);
 
         }catch (Exception e){

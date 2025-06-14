@@ -7,8 +7,10 @@ import com.example.user_service.User_Service.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -19,6 +21,9 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+    private final String topicName = "follow-request";
 
     public ResponseEntity<UserEntity> getCurrentUser(){
         String email = UserContext.getEmail();
@@ -105,7 +110,7 @@ public class UserService {
         user.getFollowing().add(following);
         userRepository.save(user);
 
-
+        kafkaTemplate.send(topicName, "Sending Follow Request from "+ userId+ "to "+ followingId);
         return ResponseEntity.ok().build();
     }
 }
